@@ -81,7 +81,9 @@ char caesar_core(char ch, int key)
 	const int alphabet_size = 26;
 
 	ch -= offset;
-	ch = (ch + key) % alphabet_size;
+	// C's % operator doesn't work like python's for negative numbers
+	// ((n % M) + M) % M same as (n % M) in python
+	ch = (((ch + key) % alphabet_size) + 26) % 26;
 	ch += offset;
 
 	return ch;
