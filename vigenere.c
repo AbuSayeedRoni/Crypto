@@ -1,3 +1,17 @@
+/**
+ * C implementaion Vigenère cipher
+ *
+ * Author: Abu Sayeed Roni 
+ * roni.abusayeed@gmail.com
+ * 
+ * Copyright (c) 2019
+ * All rights reserved
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted.
+ */
+
+
 #include <stdio.h>
 #include <cs50.h>
 #include <string.h>
@@ -8,8 +22,8 @@ char caesar_core(char ch, int key);
 int key_manager();
 int intput_error();
 
-
-char* KEYWORD = NULL;
+// Keyword is not case sensitive i.e. A and a means same thing and so on...
+char* KEYWORD = NULL;	
 const char* DECRYPT_OPTION = "-d";
 
 

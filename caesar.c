@@ -1,3 +1,16 @@
+/**
+ * C implementaion Caesar cipher
+ *
+ * Author: Abu Sayeed Roni 
+ * roni.abusayeed@gmail.com
+ * 
+ * Copyright (c) 2019
+ * All rights reserved
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted.
+ */
+
 #include <stdio.h>
 #include <cs50.h>
 #include <stdlib.h>
