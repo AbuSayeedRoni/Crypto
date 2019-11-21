@@ -14,8 +14,15 @@ int main(int argc, string argv[])
 		// argv[1] is the key
 
 		// Validate the key: each character is a digit
+		// But the first character can be optionally a negative (-) or a positive (+) sign.
 		for(int i = 0, n = strlen(argv[1]); i < n; i++)
 		{
+			if(i == 0)
+			{
+				if(argv[1][i] == '-' || argv[1][i] == '+')
+					continue;
+			}
+
 			if(! isdigit(argv[1][i]))
 			{
 				printf("Usage: %s key\n", argv[0]);
@@ -28,7 +35,6 @@ int main(int argc, string argv[])
 
 		// Convert the key to int type
 		int key = atoi(argv[1]);
-
 
 		// Get the plain text
 		string plain_text = get_string("plaintext: ");
