@@ -68,7 +68,7 @@ int main(int argc, string argv[])
  * @param key: cipher key i.e. the number of steps rotated around the alphabets.
  * @return: encrypted character i.e. the letter in the English alphabet that is 
  * <key> steps around the alphabet.
- * This function preserves the case of the letters doesn't modify the character 
+ * This function preserves the case of the letters and doesn't modify the character 
  * if it's not a letter.
  */
 char caesar_core(char ch, int key)
