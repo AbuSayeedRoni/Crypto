@@ -6,19 +6,19 @@
 
 char caesar_core(char ch, int key);
 int key_manager();
+int intput_error();
+
 
 char* KEYWORD = NULL;
+const char* DECRYPT_OPTION = "-d";
 
 
 int main(int argc, char const *argv[])
 {
-	// Make sure there is exactly one command-line argument
-	if(argc != 2)
-	{
-		printf("Usage: %s keyword\n",argv[0]);
-		return 1;
-	}
-	else 
+	// Make sure there is exactly one (for encryption) 
+	// or two (for decryption) commandline argument.
+
+	if(argc == 2)	// for one command-line argument
 	{
 		// Get the keyword
 		KEYWORD = malloc(sizeof(char) * (strlen(argv[1]) + 1)); 	// One extra Byte for null-terminator
@@ -29,8 +29,7 @@ int main(int argc, char const *argv[])
 		{
 			if(! isalpha(KEYWORD[i])) 
 			{
-				printf("Usage: %s keyword\n",argv[0]);
-				return 1;
+				return intput_error();
 			}
 		}
 
@@ -56,7 +55,7 @@ int main(int argc, char const *argv[])
 			}
 			else
 			{
-				cipher_text[i] = plain_text[i];
+				cipher_text[i] = plain_char;
 			}		
 		}
 		cipher_text[size] = 0;	// NULL terminator.
@@ -68,6 +67,67 @@ int main(int argc, char const *argv[])
 		free(cipher_text);
 		free(KEYWORD);
 		return 0;
+	}
+
+	else if(argc == 3)	// for two command-line argument
+	{
+		// Make sure the first argument (decryption option) is valid
+		if(strlen(argv[1]) != strlen(DECRYPT_OPTION)){
+			return intput_error();
+		}
+		for(int i = 0, n = strlen(DECRYPT_OPTION); i < n; i++)
+		{
+			if(DECRYPT_OPTION[i] != argv[1][i]){
+				return intput_error();
+			}
+		}
+
+		// Get the keyword (second argument)
+		KEYWORD = malloc(sizeof(char) * (strlen(argv[2]) + 1)); 	// One extra Byte for null-terminator
+		strcpy(KEYWORD, argv[2]);
+
+		// Make sure the argument i.e. the keyword contains only letters
+		for(int i = 0, n = strlen(KEYWORD); i < n; i++)	
+		{
+			if(! isalpha(KEYWORD[i])) 
+			{
+				return intput_error();
+			}
+		}
+
+		// Get the cipher text
+		string cipher_text = get_string("ciphertext: ");
+
+		// Decrypt
+		int size = strlen(cipher_text);
+		char* plain_text = malloc(sizeof(char) * (size + 1));	// One extra Byte for null-terminator
+		for(int i = 0; i < size; i++)
+		{
+			char cipher_char = cipher_text[i];
+			if(isalpha(cipher_char))
+			{
+				// Negative caesar key will rotate in the oposite direction.
+				char plain_char = caesar_core(cipher_char, ( - key_manager()));				
+				plain_text[i] = plain_char;
+			}
+			else
+			{
+				plain_text[i] = cipher_char;
+			}
+		}
+		plain_text[size] = 0;	// Null terminator
+
+		// Show output
+		printf("plaintext: %s\n", plain_text);
+
+		// Clean Up
+		free(plain_text);
+		free(KEYWORD);
+		return 0;
+	}
+	else 
+	{
+		return intput_error();
 	}
 }
 
@@ -124,8 +184,17 @@ char caesar_core(char ch, int key)
 	const int alphabet_size = 26;
 
 	ch -= offset;
-	ch = (ch + key) % alphabet_size;
+	// C's % operator doesn't work like python's for negative numbers
+	// ((n % M) + M) % M same as (n % M) in python
+	ch = (((ch + key) % alphabet_size) + 26) % 26;
 	ch += offset;
 
 	return ch;
+}
+
+int intput_error()
+{
+	printf("Usage: ./vigenere keyword\n");
+	printf("Usage: ./vigenere -d keyword\n");
+	return 1;
 }
