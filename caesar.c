@@ -55,6 +55,16 @@ int main(int argc, string argv[])
 	}
 }
 
+/**
+ * Rotational cipher function around 26 letters of English alphabet.
+ *
+ * @param ch: plaintext character that's needed to be encrypted.
+ * @param key: cipher key i.e. the number of steps rotated around the alphabets.
+ * @return: encrypted character i.e. the letter in the English alphabet that is 
+ * <key> steps around the alphabet.
+ * This function preserves the case of the letters doesn't modify the character 
+ * if it's not a letter.
+ */
 char caesar_core(char ch, int key)
 {
 	// Dont change if it's not an alpha
