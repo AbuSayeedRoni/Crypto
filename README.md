@@ -7,7 +7,7 @@
    
    1. Download the latest release from https://github.com/cs50/libcs50/releases.
    
-   2. Extract libcs50-*.*.
+   2. Extract ```libcs50-*.*```.
    
    3. ```$ cd libcs50-*```.
    
