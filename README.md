@@ -1,9 +1,9 @@
 # CRYPTO
 
-# Dependencies: 
+## Dependencies: 
   cs50 library
   
-  # Install instructions: (For Linux and Mac)
+  ### Install instructions: (For Linux and Mac)
    
    1. Download the latest release from https://github.com/cs50/libcs50/releases.
    
@@ -13,7 +13,7 @@
    
    4. ```$ sudo make install```.
     
-# Troubleshooting
+### Troubleshooting
   If when compiling your program, you see:
 
   ```/usr/bin/ld: cannot find -lcs50```:
@@ -25,7 +25,7 @@
   ```cannot open shared object file: No such file or directory```:
   Add ```export LD_LIBRARY_PATH=/usr/local/lib``` to your ~/.bashrc.
 
-# Build: (Build using your preferred compiler)
+## Build: (Build using your preferred compiler)
   ```
   $ clang vigenere.c -o vigenere -lcs50
   ```
