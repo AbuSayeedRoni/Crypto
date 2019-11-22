@@ -4,10 +4,14 @@
   cs50 library
   
   # Install instructions: (For Linux and Mac)
-   Download the latest release from https://github.com/cs50/libcs50/releases
-   Extract libcs50-*.*
-   cd libcs50-*
-   sudo make install
+   
+   1. Download the latest release from https://github.com/cs50/libcs50/releases.
+   
+   2. Extract libcs50-*.*.
+   
+   3. ```$ cd libcs50-*```.
+   
+   4. ```$ sudo make install```.
     
 # Troubleshooting
   If when compiling your program, you see:
