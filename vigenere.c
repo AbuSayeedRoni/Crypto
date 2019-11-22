@@ -1,14 +1,17 @@
 /**
- * C implementaion Vigenère cipher
+ * C implementaion of Vigenère cipher
+ *
+ * This program encrypts and decrypts messages using the Vigenère cipher. 
+ * The keyword must have at least one letter. The keyword is case-insensitive
+ * and it must not contain non-alphabatic characters otherwise it's rejected.
+ * When encrypting or decrypting, the case is preserved, and non-letters are 
+ * kept unchanged.
  *
  * Author: Abu Sayeed Roni 
  * roni.abusayeed@gmail.com
  * 
  * Copyright (c) 2019
  * All rights reserved
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted.
  */
 
 
@@ -22,127 +25,88 @@ char caesar_core(char ch, int key);
 int key_manager();
 int intput_error();
 
-// Keyword is not case sensitive i.e. A and a means same thing and so on...
+string input(bool decrypt);
+void ouput(bool decrypt, string value);
+
+
 char* KEYWORD = NULL;	
 const char* DECRYPT_OPTION = "-d";
+
+bool DECRYPT;
 
 
 int main(int argc, char const *argv[])
 {
-	// Make sure there is exactly one (for encryption) 
-	// or two (for decryption) commandline argument.
+	// interpret command modes (encrypt/decrypt)
 
-	if(argc == 2)	// for one command-line argument
-	{
-		// Get the keyword
-		KEYWORD = malloc(sizeof(char) * (strlen(argv[1]) + 1)); 	// One extra Byte for null-terminator
-		strcpy(KEYWORD, argv[1]);
-
-		// Make sure the argument i.e. the keyword contains only letters
-		for(int i = 0, n = strlen(KEYWORD); i < n; i++)	
-		{
-			if(! isalpha(KEYWORD[i])) 
-			{
-				return intput_error();
-			}
-		}
-
-		// Get the plaintext
-		string plain_text = get_string("plaintext: ");
-
-		// Make cipher
-		int size = strlen(plain_text);
-		char* cipher_text = malloc(sizeof(char) * (size + 1));	// One extra Byte for null terminator
-
-		for(int i = 0; i < size; i++) {
-			char plain_char = plain_text[i];
-
-			// Don't call the key_manager function if we are not intending to use the key
-			// because each function call will update the counter inside key_manager. And
-			// we only need to use the key to cipher a character if it's a letter.
-			if(isalpha(plain_char))
-			{
-				int key = key_manager();	// We already made sure the keyword only contains letters.
-											// So there won't be any surprising behaviour. Like returning -1.
-				char cipher_letter = caesar_core(plain_text[i], key);
-				cipher_text[i] = cipher_letter;
-			}
-			else
-			{
-				cipher_text[i] = plain_char;
-			}		
-		}
-		cipher_text[size] = 0;	// NULL terminator.
-
-		// Show output
-		printf("ciphertext: %s\n", cipher_text);
-
-		// Clean Up
-		free(cipher_text);
-		free(KEYWORD);
-		return 0;
+	if(argc == 2){
+		DECRYPT = false;
 	}
-
-	else if(argc == 3)	// for two command-line argument
-	{
-		// Make sure the first argument (decryption option) is valid
-		if(strlen(argv[1]) != strlen(DECRYPT_OPTION)){
-			return intput_error();
-		}
-		for(int i = 0, n = strlen(DECRYPT_OPTION); i < n; i++)
-		{
-			if(DECRYPT_OPTION[i] != argv[1][i]){
-				return intput_error();
-			}
-		}
-
-		// Get the keyword (second argument)
-		KEYWORD = malloc(sizeof(char) * (strlen(argv[2]) + 1)); 	// One extra Byte for null-terminator
-		strcpy(KEYWORD, argv[2]);
-
-		// Make sure the argument i.e. the keyword contains only letters
-		for(int i = 0, n = strlen(KEYWORD); i < n; i++)	
-		{
-			if(! isalpha(KEYWORD[i])) 
-			{
-				return intput_error();
-			}
-		}
-
-		// Get the cipher text
-		string cipher_text = get_string("ciphertext: ");
-
-		// Decrypt
-		int size = strlen(cipher_text);
-		char* plain_text = malloc(sizeof(char) * (size + 1));	// One extra Byte for null-terminator
-		for(int i = 0; i < size; i++)
-		{
-			char cipher_char = cipher_text[i];
-			if(isalpha(cipher_char))
-			{
-				// Negative caesar key will rotate in the oposite direction.
-				char plain_char = caesar_core(cipher_char, ( - key_manager()));				
-				plain_text[i] = plain_char;
-			}
-			else
-			{
-				plain_text[i] = cipher_char;
-			}
-		}
-		plain_text[size] = 0;	// Null terminator
-
-		// Show output
-		printf("plaintext: %s\n", plain_text);
-
-		// Clean Up
-		free(plain_text);
-		free(KEYWORD);
-		return 0;
+	else if(argc == 3){
+		DECRYPT = true;
 	}
-	else 
-	{
+	else{
 		return intput_error();
 	}
+
+	// gather command details and validate
+
+	if(DECRYPT){
+		// validate decryption option (first command-line argument)
+		if(strlen(argv[1]) != strlen(DECRYPT_OPTION))
+			return intput_error();
+		for(int i = 0, n = strlen(DECRYPT_OPTION); i < n; i++){
+			if(DECRYPT_OPTION[i] != argv[1][i])
+				return intput_error();
+		}
+
+		// in decryption mode the keyword is the second command-line argument
+		// and in encryption mode it's the first command-line argument
+
+		// get the keyword (second command-line argument)
+		KEYWORD = malloc(sizeof(char) * (strlen(argv[2]) + 1));  // one extra Byte for null-terminator
+		strcpy(KEYWORD, argv[2]);
+	}
+	else {
+		// Get the keyword (first command-line argument)
+		KEYWORD = malloc(sizeof(char) * (strlen(argv[1]) + 1));  // one extra Byte for null-terminator
+		strcpy(KEYWORD, argv[1]);
+	}
+	// validate the keyword
+	// keyword must not contain anything other than letters
+	for(int i = 0, n = strlen(KEYWORD); i < n; i++)	{
+		if(! isalpha(KEYWORD[i])) 
+		{
+			return intput_error();
+		}
+	}
+
+	// get the input text
+	string input_text = input(DECRYPT);
+
+	// make translate (encrypt/decrypt)
+	int modifier = DECRYPT ? -1 : 1; 	// modifies the caesar key to rotate backward/forward
+	int text_size = strlen(input_text);
+	char* output_text = malloc(sizeof(char) * (text_size + 1));	 // one extra Byte for null-terminator
+	for(int i = 0; i < text_size; i++){
+		char temp_c = input_text[i];
+		if(isalpha(temp_c)){
+			int key = key_manager();
+			output_text[i] = caesar_core(temp_c, modifier * key);
+		}
+		else{
+			output_text[i] = temp_c;
+		}
+	}
+	output_text[text_size] = 0;	// null terminator
+
+	// show output
+	ouput(DECRYPT, output_text);
+
+	// clean up
+	free(KEYWORD);	
+	free(output_text);
+	return 0;
 }
 
 
@@ -204,6 +168,21 @@ char caesar_core(char ch, int key)
 	ch += offset;
 
 	return ch;
+}
+
+string input(bool decrypt)
+{
+	string value;
+	if(decrypt) value = get_string("ciphertext: ");
+	else value = get_string("plaintext: ");
+	return value;
+}
+
+void ouput(bool decrypt, string value)
+{
+	if(decrypt) printf("plaintext: ");
+	else printf("ciphertext: ");
+	printf("%s\n", value);
 }
 
 int intput_error()
